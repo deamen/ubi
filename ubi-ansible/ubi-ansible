@@ -1,0 +1,20 @@
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.0.0-1580
+
+
+RUN microdnf install -y python3-pip openssh-clients sshpass unzip && \
+    pip3 install --upgrade pip && \
+    pip3 install --upgrade virtualenv && \
+    python3 -m pip install ansible hvac
+
+RUN mkdir /ansible
+VOLUME /ansible
+
+# Explicitly tell ansible to load ansible.cfg from bind mount folder
+# otherwise it refues to load it becuase the folder is world writable when running in WSL
+ENV ANSIBLE_CONFIG=/ansible/ansible.cfg
+
+# Install vault for credential management
+RUN curl -o /root/vault.zip "https://releases.hashicorp.com/vault/1.11.0/vault_1.11.0_linux_amd64.zip"&& \
+    unzip /root/vault.zip -d /usr/local/bin&& \
+    rm -f /root/vault.zip
+
