@@ -26,7 +26,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the ${{ inputs.app }} UBI image
-        run: docker build ./${{ inputs.app }}/ --file ./${{ inputs.app }}/Dockerfile.${{ inputs.app }} --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:${{ github.run_id }} --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:latest
+        run: docker build --squash ./${{ inputs.app }}/ --file ./${{ inputs.app }}/Dockerfile.${{ inputs.app }} --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:${{ github.run_id }} --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:latest
 
       - name: Run the Anchore scan
         uses: anchore/scan-action@ecfd0e98932e57ea8f68f29c4f418fc41a8194db #v3.2.5
