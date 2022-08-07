@@ -1,0 +1,49 @@
+name: UBI base workflow
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        required: true
+        type: string
+      registry:
+        required: true
+        type: string
+        
+jobs:
+ 
+  build-scan-push-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b #v3.0.2
+
+      - name: Enable docker experimental feature
+        run: |
+          echo $'{\n    "experimental": true\n}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the ${{ inputs.app }} UBI image
+        run:  DOCKER_CLI_EXPERIMENTAL=enabled docker build --squash ./${{ inputs.app }}/ --file ./${{ inputs.app }}/Dockerfile.${{ inputs.app }} --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:${{ github.run_id }} --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:latest
+
+      - name: Run the Anchore scan
+        uses: anchore/scan-action@ecfd0e98932e57ea8f68f29c4f418fc41a8194db #v3.2.5
+        with:
+          image: "${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:${{ github.run_id }}"
+          acs-report-enable: true
+          fail-build: false
+
+      - name: Upload Anchore Scan Report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: results.sarif
+
+      - name: Push the image as latest
+        run: docker push --all-tags ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}
