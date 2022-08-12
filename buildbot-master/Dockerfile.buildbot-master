@@ -24,6 +24,8 @@ RUN pip3 --no-cache-dir install buildbot==$BUILDBOT_VER \
       hvac \
       psycopg
 
+ENV TZ Australia/Melbourne
+
 RUN mkdir ${VIRTUAL_ENV}/buildmaster
 WORKDIR ${VIRTUAL_ENV}/buildmaster
 
