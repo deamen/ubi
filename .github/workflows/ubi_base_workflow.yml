@@ -33,17 +33,17 @@ jobs:
       - name: Build the ${{ inputs.app }} UBI image
         run:  DOCKER_CLI_EXPERIMENTAL=enabled docker build --squash ./${{ inputs.app }}/ --file ./${{ inputs.app }}/Dockerfile.${{ inputs.app }} --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:${{ github.run_id }} --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:latest
 
-      - name: Run the Anchore scan
-        uses: anchore/scan-action@ecfd0e98932e57ea8f68f29c4f418fc41a8194db #v3.2.5
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@cb606dfdb0d2b3698ace62192088ef4f5360b24f #v0.6.2
         with:
-          image: "${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:${{ github.run_id }}"
-          acs-report-enable: true
-          fail-build: false
+          image-ref: "${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:${{ github.run_id }}"
+          format: 'sarif'
+          output: 'trivy-results.sarif'
 
-      - name: Upload Anchore Scan Report
-        uses: github/codeql-action/upload-sarif@v2
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@bbc2e7010f187d73e9eb71ea708c31bbbe580964 #v2.1.18
         with:
-          sarif_file: results.sarif
+          sarif_file: 'trivy-results.sarif'
 
-      - name: Push the image as latest
+      - name: Push the image
         run: docker push --all-tags ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}
