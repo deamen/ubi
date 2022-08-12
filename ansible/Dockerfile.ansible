@@ -8,6 +8,8 @@ RUN pip3 install --upgrade pip
 RUN pip3 install --upgrade virtualenv
 RUN pip3 install ansible hvac
 
+ENV TZ Australia/Melbourne
+
 RUN mkdir ${ANSIBLE_FOLDER}
 VOLUME /ansible
 
