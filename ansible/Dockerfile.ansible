@@ -3,6 +3,7 @@ FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 ENV VAULT_VER="1.11.2"
 ENV ANSIBLE_FOLDER=/ansible
 
+RUN microdnf reinstall -y --nodocs --setopt install_weak_deps=0 tzdata
 RUN microdnf install -y --nodocs --setopt install_weak_deps=0 python3-pip openssh-clients sshpass unzip
 RUN pip3 install --upgrade pip
 RUN pip3 install --upgrade virtualenv
