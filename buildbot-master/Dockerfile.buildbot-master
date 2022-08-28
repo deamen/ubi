@@ -4,6 +4,7 @@ ENV BUILDBOT_VER="3.5.0"
 ENV VIRTUAL_ENV=/buildbot_pyvenv
 ENV DINIT_VER="1.2.5"
 
+RUN microdnf update -y --nodocs --setopt install_weak_deps=0
 RUN microdnf reinstall -y --nodocs --setopt install_weak_deps=0 tzdata
 RUN curl -L --output /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v${DINIT_VER}/dumb-init_${DINIT_VER}_x86_64
 RUN chmod a+x /usr/bin/dumb-init
