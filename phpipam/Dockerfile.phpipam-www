@@ -1,0 +1,23 @@
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS builder
+
+ENV PHPIPAM_VER="1.5.0"
+
+RUN microdnf install -y tar
+RUN curl -L --output /phpipam-v${PHPIPAM_VER}.tgz https://github.com/phpipam/phpipam/releases/download/v${PHPIPAM_VER}/phpipam-v${PHPIPAM_VER}.tgz
+RUN tar -xf /phpipam-v${PHPIPAM_VER}.tgz
+
+FROM registry.access.redhat.com/ubi8/php-74:1-71
+ENV TZ Australia/Melbourne
+
+USER 0
+RUN dnf remove -y *devel* vim-minimal
+RUN dnf update -y --nodocs --setopt install_weak_deps=0
+RUN dnf install -y --nodocs --setopt install_weak_deps=0 php-pear iputils
+RUN dnf reinstall -y --nodocs --setopt install_weak_deps=0 tzdata
+RUN sed -i 's/;date.timezone =.*/date.timezone = Australia\/Melbourne/g' /etc/php.ini
+COPY --from=builder /phpipam /opt/app-root/src
+RUN chown -R 1001:1001 /opt/app-root/src
+
+RUN cp ./config.docker.php ./config.php
+
+CMD /usr/libexec/s2i/run

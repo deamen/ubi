@@ -1,0 +1,27 @@
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS builder
+
+ENV PHPIPAM_VER="1.5.0"
+
+RUN microdnf install -y tar
+RUN curl -L --output /phpipam-v${PHPIPAM_VER}.tgz https://github.com/phpipam/phpipam/releases/download/v${PHPIPAM_VER}/phpipam-v${PHPIPAM_VER}.tgz
+RUN tar -xf /phpipam-v${PHPIPAM_VER}.tgz
+
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
+
+ENV TZ Australia/Melbourne
+
+RUN microdnf update -y --nodocs --setopt install_weak_deps=0
+RUN microdnf reinstall -y --nodocs --setopt install_weak_deps=0 tzdata
+RUN microdnf install -y --nodocs --setopt install_weak_deps=0 cronie iputils
+RUN microdnf module reset php
+RUN microdnf module enable --nodocs --setopt install_weak_deps=0 php:7.4
+RUN microdnf install -y --nodocs --setopt install_weak_deps=0 php-pdo php-mysqlnd php-gmp php-posix
+RUN sed -i 's/;date.timezone =.*/date.timezone = Australia\/Melbourne/g' /etc/php.ini
+
+COPY --from=builder /phpipam /phpipam
+RUN cp /phpipam/config.docker.php /phpipam/config.php
+
+ADD crontab ./crontab
+RUN cat crontab  | crontab -
+
+CMD declare -p | grep IPAM  > /phpipam_cron.env && crond -n

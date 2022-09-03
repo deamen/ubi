@@ -1,0 +1,81 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.2.0
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2022-09-03T08:05:56Z"
+  labels:
+    app: phpipam-pod
+  name: phpipam-pod
+spec:
+  containers:
+  - args:
+    - /bin/sh
+    - -c
+    - /usr/libexec/s2i/run
+    env:
+    - name: IPAM_DATABASE_USER
+      value: phpipam
+    - name: IPAM_DATABASE_HOST
+      value: 127.0.0.1
+    - name: IPAM_DATABASE_PASS
+      value: {{ ipam_secret.db_password }}
+    image: localhost/phpipam-www:latest
+    name: phpipam-pod-www
+    ports:
+    - containerPort: 8080
+      hostPort: 8080
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+  - args:
+    - mariadbd
+    env:
+    - name: MARIADB_ROOT_PASSWORD
+      value: {{ ipam_secret.db_root_password }}
+    - name: IPAM_DATABASE_PASS
+      value: {{ ipam_secret.db_password }}
+    - name: MARIADB_USER
+      value: phpipam
+    image: docker.io/library/mariadb:latest
+    name: phpipam-pod-mariadb
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+    volumeMounts:
+    - mountPath: /var/lib/mysql:Z
+      name: phpipam-pod-mariadb-vol-pvc
+  - env:
+    - name: IPAM_DATABASE_PASS
+      value: {{ ipam_secret.db_password }}
+    - name: IPAM_DATABASE_USER
+      value: phpipam
+    - name: IPAM_DATABASE_HOST
+      value: 127.0.0.1
+    image: localhost/phpipam-cron:latest
+    name: phpipam-pod-cron
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+  hostname: phpipam-pod
+  restartPolicy: Never
+  volumes:
+  - name: phpipam-pod-mariadb-vol-pvc
+    persistentVolumeClaim:
+      claimName: phpipam-pod-mariadb-vol
+status: {}
+

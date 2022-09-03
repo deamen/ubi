@@ -1,0 +1,5 @@
+SHELL=/bin/bash
+BASH_ENV=/phpipam_cron.env
+*/5  *  *  *  * /usr/bin/php /phpipam/functions/scripts/discoveryCheck.php
+*/5  *  *  *  * /usr/bin/php /phpipam/functions/scripts/pingCheck.php
+*/5  *  *  *  * /usr/bin/php /phpipam/functions/scripts/resolveIPaddresses.php
