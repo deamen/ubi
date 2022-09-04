@@ -15,7 +15,7 @@ RUN microdnf reinstall -y --nodocs --setopt install_weak_deps=0 tzdata
 RUN microdnf install -y --nodocs --setopt install_weak_deps=0 cronie iputils
 RUN microdnf module reset php
 RUN microdnf module enable --nodocs --setopt install_weak_deps=0 php:7.4
-RUN microdnf install -y --nodocs --setopt install_weak_deps=0 php php-pdo php-mysqlnd php-gmp php-posix
+RUN microdnf install -y --nodocs --setopt install_weak_deps=0 php php-cli php-pdo php-mysqlnd php-gmp php-posix
 RUN sed -i 's/;date.timezone =.*/date.timezone = Australia\/Melbourne/g' /etc/php.ini
 
 COPY --from=builder /phpipam /phpipam
