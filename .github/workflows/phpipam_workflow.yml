@@ -1,0 +1,58 @@
+# This is a basic workflow to help you get started with Actions
+
+name: "UBI: phpipam"
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "master" ]
+    paths: 
+       - 'phpipam/**'
+  pull_request:
+    branches: [ "master" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  build-scan-push-image:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["www", "cron"]
+
+    steps:
+      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b #v3.0.2
+
+      - name: Enable docker experimental feature
+        run: |
+          echo $'{\n    "experimental": true\n}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the phpipam UBI image
+        run:  DOCKER_CLI_EXPERIMENTAL=enabled docker build --squash ./phpipam/ --file ./phpipam/Dockerfile.phpipam-${{ matrix.image }} --tag ghcr.io/${{ github.repository }}/phpipam-${{ matrix.image }}:${{ github.run_id }} --tag ghcr.io/${{ github.repository }}/phpipam-${{ matrix.image }}:latest
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@cb606dfdb0d2b3698ace62192088ef4f5360b24f #v0.6.2
+        with:
+          image-ref: "ghcr.io/${{ github.repository }}/phpipam-${{ matrix.image }}:${{ github.run_id }}"
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@bbc2e7010f187d73e9eb71ea708c31bbbe580964 #v2.1.18
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Push the image
+        run: docker push --all-tags ghcr.io/${{ github.repository }}/phpipam-${{ matrix.image }}
