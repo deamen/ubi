@@ -22,8 +22,8 @@ spec:
       value: 127.0.0.1
     - name: IPAM_DATABASE_PASS
       value: {{ ipam_secret.db_password }}
-    image: localhost/phpipam-www:latest
-    name: phpipam-pod-www
+    image: ghcr.io/deamen/ubi/phpipam-www:latest
+    name: www
     ports:
     - containerPort: 8080
       hostPort: 8080
@@ -44,7 +44,7 @@ spec:
     - name: MARIADB_USER
       value: phpipam
     image: docker.io/library/mariadb:latest
-    name: phpipam-pod-mariadb
+    name: mariadb
     resources: {}
     securityContext:
       capabilities:
@@ -54,7 +54,7 @@ spec:
         - CAP_AUDIT_WRITE
     volumeMounts:
     - mountPath: /var/lib/mysql:Z
-      name: phpipam-pod-mariadb-vol-pvc
+      name: phpipam-mariadb-vol-pvc
   - env:
     - name: IPAM_DATABASE_PASS
       value: {{ ipam_secret.db_password }}
@@ -62,8 +62,8 @@ spec:
       value: phpipam
     - name: IPAM_DATABASE_HOST
       value: 127.0.0.1
-    image: localhost/phpipam-cron:latest
-    name: phpipam-pod-cron
+    image: ghcr.io/deamen/ubi/phpipam-cron:latest
+    name: cron
     resources: {}
     securityContext:
       capabilities:
@@ -74,8 +74,8 @@ spec:
   hostname: phpipam-pod
   restartPolicy: Never
   volumes:
-  - name: phpipam-pod-mariadb-vol-pvc
+  - name: phpipam-mariadb-vol-pvc
     persistentVolumeClaim:
-      claimName: phpipam-pod-mariadb-vol
+      claimName: phpipam-mariadb-vol
 status: {}
 
