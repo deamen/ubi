@@ -26,7 +26,7 @@ podman run -d --pod phpipam-pod \
   --env IPAM_DATABASE_PASS \
   --env IPAM_DATABASE_USER="phpipam" \
   --env IPAM_DATABASE_HOST="127.0.0.1" \
-  localhost/phpipam-www
+  ghcr.io/deamen/ubi/phpipam-www:latest
 
 # Startup database 
 podman run -d --pod phpipam-pod \
@@ -43,7 +43,7 @@ podman run -d --pod phpipam-pod \
   --env IPAM_DATABASE_PASS \
   --env IPAM_DATABASE_USER="phpipam" \
   --env IPAM_DATABASE_HOST="127.0.0.1" \
-  localhost/phpipam-cron 
+  ghcr.io/deamen/ubi/phpipam-cron:latest
 
 ```
 
@@ -63,7 +63,7 @@ mysql> exit
 Bye
 ```
 
-# To install phpipam:
+# To install phpipam[^1]:
 Open http://127.0.0.1:8080, select automatic as usual, but click on advanced and uncheck all three options:
 
 - [] Drop exisitng database - Drop existing database if it exists 
