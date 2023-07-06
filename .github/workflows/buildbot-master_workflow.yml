@@ -20,3 +20,5 @@ jobs:
     uses: ./.github/workflows/ubi_base_workflow.yml
     with:
       app: buildbot-master
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
+    secrets: inherit
