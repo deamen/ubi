@@ -20,7 +20,3 @@ jobs:
     uses: ./.github/workflows/ubi_base_workflow.yml
     with:
       app: buildbot-master
-      registry: ${{ secrets.REGISTRY_SERVER }}
-      registry_namespace: ${{ secrets.REGISTRY_NAMESPACE }}
-      registry_username: ${{ secrets.REGISTRY_USERNAME }}
-      registry_password: ${{ secrets.REGISTRY_PASSWORD }}

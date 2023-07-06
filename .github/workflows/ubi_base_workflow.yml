@@ -6,18 +6,6 @@ on:
       app:
         required: true
         type: string
-      registry:
-        required: true
-        type: string
-      registry_namespace:
-        required: true
-        type: string
-      registry_username:
-        required: true
-        type: string
-      registry_password:
-        required: true
-        type: string
         
 jobs:
  
@@ -35,17 +23,17 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v1
         with:
-          registry: ${{ inputs.registry }}
-          username: ${{ inputs.registry_username }}
-          password: ${{ inputs.registry_password }}
+          registry: ${{ secrets.REGISTRY_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Build the ${{ inputs.app }} UBI image
         run: |
           DOCKER_CLI_EXPERIMENTAL=enabled docker build \
           --squash ./${{ inputs.app }}/ \
           --file ./${{ inputs.app }}/Dockerfile.${{ inputs.app }} \
-          --tag ${{ inputs.registry }}/${{ inputs.registry_namespace }}/${{ inputs.app }}:${{ github.run_id }} \
-          --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:latest
+          --tag ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}:${{ github.run_id }} \
+          --tag ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}:latest
 
       - name: Push the image
-        run: docker push --all-tags ${{ inputs.registry }}/${{ inputs.registry_namespace }}/${{ inputs.app }}
+        run: docker push --all-tags ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}
