@@ -9,6 +9,15 @@ on:
       registry:
         required: true
         type: string
+      registry_namespace:
+        required: true
+        type: string
+      registry_username:
+        required: true
+        type: string
+      registry_password:
+        required: true
+        type: string
         
 jobs:
  
@@ -27,23 +36,16 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ${{ inputs.registry }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ inputs.registry_username }}
+          password: ${{ inputs.registry_password }}
 
       - name: Build the ${{ inputs.app }} UBI image
-        run:  DOCKER_CLI_EXPERIMENTAL=enabled docker build --squash ./${{ inputs.app }}/ --file ./${{ inputs.app }}/Dockerfile.${{ inputs.app }} --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:${{ github.run_id }} --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:latest
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@cb606dfdb0d2b3698ace62192088ef4f5360b24f #v0.6.2
-        with:
-          image-ref: "${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:${{ github.run_id }}"
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@bbc2e7010f187d73e9eb71ea708c31bbbe580964 #v2.1.18
-        with:
-          sarif_file: 'trivy-results.sarif'
+        run: |
+          DOCKER_CLI_EXPERIMENTAL=enabled docker build \
+          --squash ./${{ inputs.app }}/ \
+          --file ./${{ inputs.app }}/Dockerfile.${{ inputs.app }} \
+          --tag ${{ inputs.registry }}/${{ inputs.registry_namespace }}/${{ inputs.app }}:${{ github.run_id }} \
+          --tag ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}:latest
 
       - name: Push the image
-        run: docker push --all-tags ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.app }}
+        run: docker push --all-tags ${{ inputs.registry }}/${{ inputs.registry_namespace }}/${{ inputs.app }}
