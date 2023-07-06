@@ -21,7 +21,7 @@ jobs:
           sudo systemctl restart docker
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2.2.0
         with:
           registry: ${{ secrets.REGISTRY_SERVER }}
           username: ${{ secrets.REGISTRY_USERNAME }}
