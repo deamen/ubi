@@ -16,6 +16,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip3 --no-cache-dir install --upgrade pip
 RUN pip3 --no-cache-dir install --upgrade virtualenv
 RUN pip3 --no-cache-dir install --upgrade wheel
+RUN pip3 --no-cache-dir install --upgrade setuptools
 RUN pip3 --no-cache-dir install buildbot==$BUILDBOT_VER \
       buildbot_waterfall_view buildbot==$BUILDBOT_VER \
       buildbot_grid_view buildbot==$BUILDBOT_VER \
