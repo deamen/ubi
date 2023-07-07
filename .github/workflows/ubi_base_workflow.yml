@@ -38,7 +38,7 @@ jobs:
         uses: plexsystems/container-structure-test-action@v0.3.0
         with:
           image: ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}:${{ github.run_id }}
-          config: ./${{ inputs.app }}/${{ inputs.app }}_unit-tests.yaml
+          config: ./${{ inputs.app }}/${{ inputs.app }}_unit-tests.yml
 
       - name: Push the image
         run: docker push --all-tags ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}
