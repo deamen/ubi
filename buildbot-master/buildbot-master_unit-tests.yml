@@ -1,0 +1,6 @@
+schemaVersion: '2.0.0'
+commandTests:
+  - name: "buildbot --version"
+    command: "buildbot"
+    args: ["--version"]
+    expectedOutput: ["Buildbot version: 3.8.0"]

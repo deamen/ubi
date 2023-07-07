@@ -34,5 +34,11 @@ jobs:
           --file ./${{ inputs.app }}/Dockerfile.${{ inputs.app }} \
           --tag ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}:${{ github.run_id }}
 
+      - name: Run structure tests
+        uses: plexsystems/container-structure-test-action@v0.3.0
+        with:
+          image: ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}:${{ github.run_id }}
+          config: ${{ inputs.app }}_unit-tests.yaml
+
       - name: Push the image
         run: docker push --all-tags ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}
