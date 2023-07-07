@@ -1,0 +1,10 @@
+schemaVersion: '2.0.0'
+commandTests:
+  - name: "ansible --version | grep core"
+    command: "ansible"
+    args: ["--version", "|", "grep", "core"]
+    expectedOutput: ["2.15.1"]
+  - name: "vault --version"
+    command: "vault"
+    args: ["--version"]
+    expectedOutput: ["v1.14.0"]
