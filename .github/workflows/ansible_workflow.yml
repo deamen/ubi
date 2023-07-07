@@ -20,4 +20,5 @@ jobs:
     uses: ./.github/workflows/ubi_base_workflow.yml
     with:
       app: ansible
-      registry: ghcr.io
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
+    secrets: inherit

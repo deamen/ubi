@@ -1,13 +1,15 @@
 FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 
-ENV VAULT_VER="1.11.2"
+ENV VAULT_VER="1.14.0"
 ENV ANSIBLE_FOLDER=/ansible
 
 RUN microdnf update -y --nodocs --setopt install_weak_deps=0
 RUN microdnf reinstall -y --nodocs --setopt install_weak_deps=0 tzdata
 RUN microdnf install -y --nodocs --setopt install_weak_deps=0 python3-pip openssh-clients sshpass unzip
-RUN pip3 install --upgrade pip
-RUN pip3 install --upgrade virtualenv
+RUN pip3 --no-cache-dir install --upgrade pip
+RUN pip3 --no-cache-dir install --upgrade virtualenv
+RUN pip3 --no-cache-dir install --upgrade setuptools
+RUN pip3 --no-cache-dir install --upgrade wheel
 RUN pip3 install ansible hvac
 
 ENV TZ Australia/Melbourne
