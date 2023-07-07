@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 
-ENV BUILDBOT_VER="3.6.0"
+ENV BUILDBOT_VER="3.8.0"
 ENV VIRTUAL_ENV=/buildbot_pyvenv
 ENV DINIT_VER="1.2.5"
 

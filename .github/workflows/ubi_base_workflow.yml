@@ -32,8 +32,7 @@ jobs:
           DOCKER_CLI_EXPERIMENTAL=enabled docker build \
           --squash ./${{ inputs.app }}/ \
           --file ./${{ inputs.app }}/Dockerfile.${{ inputs.app }} \
-          --tag ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}:${{ github.run_id }} \
-          --tag ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}:latest
+          --tag ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}:${{ github.run_id }}
 
       - name: Push the image
         run: docker push --all-tags ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_NAMESPACE }}/${{ inputs.app }}
