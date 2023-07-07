@@ -1,12 +1,12 @@
 FROM registry.access.redhat.com/ubi9/ubi-init:latest
 
-RUN microdnf update -y --nodocs --setopt install_weak_deps=0
-RUN microdnf reinstall -y --nodocs --setopt install_weak_deps=0 tzdata
+RUN dnf update -y --nodocs --setopt install_weak_deps=0
+RUN dnf reinstall -y --nodocs --setopt install_weak_deps=0 tzdata
 
-RUN rpm --import https://repo.saltproject.io/salt/py3/redhat/9/x86_64/latest/SALTSTACK-GPG-KEY2.pub
-RUN curl -fsSL https://repo.saltproject.io/salt/py3/redhat/9/x86_64/latest.repo | sudo tee /etc/yum.repos.d/salt.repo
+RUN rpm --import https://repo.saltproject.io/salt/py3/redhat/9/x86_64/latest/SALT-PROJECT-GPG-PUBKEY-2023.pub
+RUN curl -fsSL https://repo.saltproject.io/salt/py3/redhat/9/x86_64/latest.repo | tee /etc/yum.repos.d/salt.repo
 
-RUN microdnf install -y --nodocs --setopt install_weak_deps=0  salt-master salt-minion
+RUN dnf install -y --nodocs --setopt install_weak_deps=0  salt-master
 
 VOLUME /etc/salt
 VOLUME /srv/salt
@@ -16,4 +16,3 @@ RUN systemctl enable salt-master.service
 
 EXPOSE 4505/tcp
 EXPOSE 4506/tcp
-
