@@ -3,4 +3,4 @@ commandTests:
   - name: "salt --version"
     command: "salt"
     args: ["--version"]
-    expectedOutput: ["salt 3006.1"]
+    expectedOutput: ["salt 3006.4"]
